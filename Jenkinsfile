@@ -42,6 +42,6 @@ pipeline {
   }
 
   tools {
-    maven 'M2'
+    maven 'C:\apache-maven-3.6.3-bin\apache-maven-3.6.3'
   }
 }
