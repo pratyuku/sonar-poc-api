@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="1f61d947-aa2d-41f0-9b1c-f7d2aa60d753" >
+		<http:listener-connection host="0.0.0.0" port="8077" />
+	</http:listener-config>
+	<flow name="hello-worldFlow" doc:id="908798ac-6a71-4217-9924-33bd6ad06369" >
+		<http:listener doc:name="Listener" doc:id="82dd80fb-eb25-4f79-bbb9-15f8e6634e3e" config-ref="HTTP_Listener_config" path="/exp/v1/offers"/>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="1683a963-2df3-4af8-9491-cc207024778a" />
+		<ee:transform doc:name="Transform Message" doc:id="4cae8902-2c5c-4ef9-ab9a-ddd17842843b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "hello world",
+	message2: "Sonar execution"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="e41c816a-2a32-4fee-823d-9ccafbe0bbc1" message="#[payload]"/>
+	</flow>
+	<sub-flow name="hello-worldSub_Flow" doc:id="415a66a6-57e7-440c-bcb1-b24e502601cb" >
+		<logger level="INFO" doc:name="Logger" doc:id="e6d204e1-97e7-4c35-8044-de2edfd90624" />
+		<ee:transform doc:name="Transform Message" doc:id="3b1ba8fa-729f-4e99-8d3e-7ac7aea440d4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "I am Subflow"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<!-- <logger level="INFO" doc:name="Logger" doc:id="7407ad8b-d223-43f2-bac8-2c9c1f13b5e7" /> -->
+	</sub-flow>
+</mule>
