@@ -1,7 +1,7 @@
 pipeline{
  agent any
  environment {
-    ANYPOINT = credentials('ANYPOINT')
+    ANYPOINT = credentials('deploy-anypoint-user')
  }
  stages {
  	stage ('Build'){
