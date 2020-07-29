@@ -1,47 +1,23 @@
-pipeline {
+pipeline{
+ agent any
+ environment {
+    ANYPOINT = credentials('ANYPOINT')
+ }
+ stages {
+ 	stage ('Build'){
+ 		steps {
+ 			withMaven(maven:'maven'){
+ 				sh 'mvn -f mule-jenkins-pipeline/pom.xml clean install'
+ 			}
+ 		}
+ 	}
+ 	stage ('Deploy'){
+ 		steps {
+ 			withMaven(maven:'maven'){
+ 				sh 'mvn -f mule-jenkins-pipeline/pom.xml package deploy  -Dusername=$ANYPOINT_USR -Dpassword=$ANYPOINT_PSW -Denvironment=Development -DmuleDeploy'
+ 			}
+ 		}
+ 	}
+ }
 
-  agent any
-  environment {
-    //adding a comment for the commit test
-    DEPLOY_CREDS = credentials('deploy-anypoint-user')
-    MULE_VERSION = '4.1.4'
-    BG = "<Capgemini>"
-    WORKER = "Micro"
-  }
-  stages {
-    stage('Build') {
-      steps {
-            bat 'mvn -B -U -e -V clean -DskipTests package'
-      }
-    }
-
-    stage('Test') {
-      steps {
-          bat "mvn test"
-      }
-    }
-
-     stage('Deploy Development') {
-      environment {
-        ENVIRONMENT = 'Sandbox'
-        APP_NAME = '<dev-hello-world-sonar-api>'
-      }
-      steps {
-            bat 'mvn -U -V -e -B -DskipTests deploy -DmuleDeploy -Dmule.version="%MULE_VERSION%" -Danypoint.username="%DEPLOY_CREDS_USR%" -Danypoint.password="%DEPLOY_CREDS_PSW%" -Dcloudhub.app="%APP_NAME%" -Dcloudhub.environment="%ENVIRONMENT%" -Dcloudhub.bg="%BG%" -Dcloudhub.worker="%WORKER%"'
-      }
-    }
-    stage('Deploy Production') {
-      environment {
-        ENVIRONMENT = 'Production'
-        APP_NAME = '<prod-hello-world-sonar-api>'
-      }
-      steps {
-            bat 'mvn -U -V -e -B -DskipTests deploy -DmuleDeploy -Dmule.version="%MULE_VERSION%" -Danypoint.username="%DEPLOY_CREDS_USR%" -Danypoint.password="%DEPLOY_CREDS_PSW%" -Dcloudhub.app="%APP_NAME%" -Dcloudhub.environment="%ENVIRONMENT%" -Dcloudhub.bg="%BG%" -Dcloudhub.worker="%WORKER%"'
-      }
-    }
-  }
-
-  tools {
-    maven 'C:\apache-maven-3.6.3-bin\apache-maven-3.6.3'
-  }
 }
